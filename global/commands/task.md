@@ -118,3 +118,6 @@ If `$ARGUMENTS` is text (not a number), this is a new task description. Do the f
 - Branch names use hyphens only — never slashes. Format: `dev-{ID}-{short-description}` (e.g. `dev-14-tailwind-cleanup`).
 - The `Blocked by` / `Blocking` relations are self-referencing on the Dev Pipeline. Use them to check dependency status before starting and to notify about unblocked tasks after finishing.
 - Never guess or fuzzy-match repos. If the resolution chain is broken (missing Client Belonging, missing Github URL, missing local directory), stop and tell the user what to fix.
+
+**Gotcha — text arguments always mean "create a new task".**
+When `$ARGUMENTS` is text (not a number), always trigger Mode B. Never interpret the text as an ad-hoc request, never search the pipeline for a matching task, and never skip task creation to "just help directly." The user typed `/task` — they want a task created. If they wanted ad-hoc help they wouldn't have used the command.
