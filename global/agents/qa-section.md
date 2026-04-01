@@ -1,5 +1,8 @@
 ---
-description: "QA agent for individual page sections. Compares a specific section against its Figma design, checks responsive behaviour, content accuracy, and visual fidelity. Use during development to verify the section you just built or modified."
+name: qa-section
+description: "QA agent for individual page sections. Compares a specific section against its Figma design, checks responsive behaviour, content accuracy, and visual fidelity. Spawn during development to verify the section you just built or modified."
+disallowedTools: Write, Edit, NotebookEdit
+model: sonnet
 ---
 
 # QA Section Agent

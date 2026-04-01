@@ -1,5 +1,8 @@
 ---
-description: "Full-page QA agent. Comprehensive end-to-end check covering visual fidelity, responsive behaviour, content accuracy, accessibility, performance, cross-browser rendering, and animations. Use pre-launch or after major changes."
+name: qa-page
+description: "Full-page QA agent. Comprehensive end-to-end check covering visual fidelity, responsive behaviour, content accuracy, accessibility, performance, cross-browser rendering, and animations. Spawn pre-launch or after major changes."
+disallowedTools: Write, Edit, NotebookEdit
+model: sonnet
 ---
 
 # QA Page Agent

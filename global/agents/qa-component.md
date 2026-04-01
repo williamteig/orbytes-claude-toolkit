@@ -1,5 +1,8 @@
 ---
-description: "QA agent for individual UI components. Tests interactive behaviour, visual states, and design fidelity for buttons, navigation, forms, cards, modals, and footers."
+name: qa-component
+description: "QA agent for individual UI components. Tests interactive behaviour, visual states, and design fidelity for buttons, navigation, forms, cards, modals, and footers. Spawn when a task involves building or modifying a UI component."
+disallowedTools: Write, Edit, NotebookEdit
+model: sonnet
 ---
 
 # QA Component Agent
