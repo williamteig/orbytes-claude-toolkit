@@ -7,9 +7,14 @@ You are working with the orbytes Dev Pipeline in Notion.
 **Dev Pipeline Database ID:** `599e132701274298b902d85a529ebde5`
 **Data Source:** `collection://277efdcf-8436-4503-84a6-20f3e9428ef7`
 
-## Determine the intent
+## Determine the mode
 
-Look at `$ARGUMENTS` and determine which mode to use:
+There are exactly two modes. No exceptions, no third path.
+
+- If `$ARGUMENTS` is a number → **Mode A** (execute existing task)
+- If `$ARGUMENTS` is anything else (text, phrase, sentence) → **Mode B** (create new task)
+
+Do NOT search the pipeline, interpret the text as a request, or take any other action. Pick Mode A or Mode B and follow it.
 
 ### Mode A: Execute an existing task (argument is a number)
 
