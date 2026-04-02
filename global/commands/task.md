@@ -56,18 +56,19 @@ If `$ARGUMENTS` is a number (e.g., `13`), this is a task ID. Do the following:
 
    **Note:** The `Github link` rollup field on the Dev Pipeline is for your visibility in Notion's UI only. It returns `<omitted />` via the API. Always follow the `Client Belonging` relation chain instead.
 
-5. **Create a working branch and worktree** — Set up an isolated workspace for this task.
+5. **Understand what's being asked** — The task title + notes + page content describe what needs to be done. Interpret the task in the context of the orbytes workflow:
+   - If it's a **Feature** or **Bug** — this likely involves writing or modifying code
+   - If it's **Research** — investigate and write up findings (typically no code changes)
+   - If it's **Docs** — write or update documentation
+   - If it's **Chore** — infrastructure, cleanup, or process work
+
+6. **Create a working branch and worktree (code tasks only)** — Only create a branch and worktree if the task involves code changes (typically Feature, Bug, or Chore tasks that modify files in the repo). **Skip this step for Research tasks** — they produce Notion documents, not code.
    - Generate the branch name: `dev-{ID}-{short-description}` (e.g. `dev-14-tailwind-cleanup`). Use lowercase, hyphens only — no slashes.
    - Create a git worktree: `git worktree add .claude/worktrees/dev-{ID}-{short-description} -b dev-{ID}-{short-description}`
    - cd into the worktree directory
    - Update the task's `Branch` property in Notion with the branch name
-   - Update the task's `Status` to "In progress"
-
-6. **Understand what's being asked** — The task title + notes + page content describe what needs to be done. Interpret the task in the context of the orbytes workflow:
-   - If it's a **Feature** or **Bug** — this likely involves writing or modifying code
-   - If it's **Research** — investigate and write up findings
-   - If it's **Docs** — write or update documentation
-   - If it's **Chore** — infrastructure, cleanup, or process work
+   - Update the task's `Status` to "Build In Progress"
+   - If skipping (no code changes): just update Status to "Build In Progress" — leave Branch empty.
 
 7. **Execute the task** — Do the work. Use all tools available to you (file editing, code execution, web search, Notion, Figma, Webflow MCPs as needed). Be thorough.
 
@@ -77,14 +78,52 @@ If `$ARGUMENTS` is a number (e.g., `13`), this is a task ID. Do the following:
    - If you created files, mention their paths and purpose
    - Include any relevant links, screenshots, or references
 
-9. **Update task status** — Move the task to the appropriate status:
+9. **Create a Research & Strategy document (Research tasks only)** — If the task's Type is "Research", create a standalone document in the client's Research & Strategy Database so findings are discoverable beyond the task page.
+
+   **a) Locate the database:**
+   - You already resolved the client page in step 4 via `Client Belonging`. Fetch that client page if you haven't already.
+   - Look for an inline database named "Research & Strategy Database" in the client page content. It will appear as a `<database>` tag with a `data-source-url` attribute.
+   - If no such database exists on the client page → skip this step and note in your report: *"No Research & Strategy Database found on the client page. Skipping document creation."*
+
+   **b) Create the page:**
+   - Use `notion-create-pages` to create a new page in the Research & Strategy Database's data source (use the `data-source-url` from the `<database>` tag).
+   - Set properties:
+     - **Name**: A clear, descriptive title for the research document (not just the task title — make it useful as a standalone reference, e.g. "Notion API: Querying Tasks by Unique ID" instead of "Find a better solution to query tasks by ID")
+     - **Category**: "Research" (or "Strategy", "Analysis", "Discovery" — pick the best fit based on the task content)
+     - **Source Task**: Link back to the Dev Pipeline task page URL
+
+   **c) Write the document content:**
+   - Use `notion-update-page` with `replace_content` to write a thorough, standalone document into the page body.
+   - Structure it for both humans and AI agents to consume:
+
+     ```markdown
+     ## Summary
+     {2-3 sentence overview of the research question and key finding}
+
+     ## Context
+     {Why this research was needed — link to the source task, relevant project context}
+
+     ## Findings
+     {The meat of the research — organized with subheadings, bullet points, code examples as appropriate}
+
+     ## Recommendations
+     {Actionable next steps based on findings}
+
+     ## References
+     {Links to external docs, related tasks, or resources consulted}
+     ```
+
+   - The document should be **self-contained** — a reader should understand the findings without needing to read the source task page.
+   - Include concrete details: code snippets, API endpoints, configuration examples, file paths — whatever makes the findings immediately actionable.
+
+10. **Update task status** — Move the task to the appropriate status:
    - If fully complete → set Status to "Done"
    - If blocked or needs review → keep as "In progress" and add a note explaining what's needed
    - Update any other relevant properties (Notes if needed)
 
-10. **Check for unblocked tasks** — After completing the task, check the `Blocking` relation. If this task is blocking other tasks, mention them: *"DEV-{ID} is now unblocked and ready to pick up."*
+11. **Check for unblocked tasks** — After completing the task, check the `Blocking` relation. If this task is blocking other tasks, mention them: *"DEV-{ID} is now unblocked and ready to pick up."*
 
-11. **Report back** — Give the user a concise summary of what you did and what's now in the Notion page.
+12. **Report back** — Give the user a concise summary of what you did and what's now in the Notion page.
 
 ### Mode B: Create a new task (argument is a description)
 
