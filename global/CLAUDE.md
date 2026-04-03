@@ -6,7 +6,7 @@ You are working on an Orbytes client project. Orbytes is a digital product studi
 
 - **Notion** — Project management, copy, brand notes, checklists (always the source of truth)
 - **Figma** — Branding assets and lightweight design mockups
-- **Webflow** — Website development (primary design + build tool for websites)
+- **Webflow** — Optional for some website engagements (native build or headless CMS); **confirm in Notion**—default new sites are **Astro + Tailwind** (see `dev-workflow.md`)
 - **GitHub** — Version control under `williamteig` personal account (private repos)
 - **Softriver** — Whitelabeled branding partner (delivers logo, palette, fonts)
 - **Relume** — Component inspiration and Webflow imports
@@ -33,6 +33,7 @@ Detailed rules, gotchas, and conventions are organized by topic in `~/.claude/ru
 - `cloudflare.md` — Pages, Workers, secrets, previews
 - `cloudcannon.md` — Git-backed CMS editing and branch workflow
 - `pipeline.md` — Dev pipeline stages, agent categories, discipline routing
+- `dev-workflow.md` — Website vs app dev paths, Astro + Tailwind default, Webflow opt-in, scaffold docs
 
 ## Cursor
 

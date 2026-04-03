@@ -70,7 +70,7 @@ Website defaults to Astro + Tailwind. App stack is chosen during onboarding (Nex
 
 - **orbytes.io** is a digital product studio run by Will Teig (william@orbytes.io)
 - **Service tiers:** Landing Page (fixed), Full Website (fixed), Custom Build (enterprise)
-- **Tools:** Notion (source of truth), Figma (design), Webflow (website builds), Relume (components), Claude (copy + code), Softriver (whitelabel branding)
+- **Tools:** Notion (source of truth), Figma (design), Astro + Tailwind (default site stack), Webflow (optional website builds / CMS), Relume (components), Claude (copy + code), Softriver (whitelabel branding)
 - **Pipeline:** Client Summary → Stage X Branding (optional) → Stage 1 Research → Stage 2 Content (Approval Gate 1) → Stage 3 Design (Approval Gate 2) → Stage 4 Development (Approval Gate 3) → Stage 5 Launch
 - **Key rules:** Three approval gates only. Notion is always truth. Figma is lightweight. Branding is always whitelabeled. Never skip stages.
 

@@ -26,7 +26,8 @@ Ask the following questions interactively (use AskUserQuestion or equivalent pro
 
 **Question 5: Additional integrations**
 (Allow multiple selections)
-- Webflow CMS (headless content from Webflow)
+- CloudCannon (Git-based CMS / visual editing — common for marketing sites)
+- Webflow CMS (headless content from Webflow — only if this engagement uses Webflow)
 - Blog / Content Collections
 - Contact form
 - Analytics (Plausible/Fathom)
@@ -40,12 +41,12 @@ Ask the following questions interactively (use AskUserQuestion or equivalent pro
   - N/A
 - **Gotcha:** If the URL contains query params like `?node-id=...&p=...&t=...`, strip them. Only store the base URL up to the file name slug (e.g. `https://www.figma.com/design/{fileKey}/{fileName}`).
 
-**Question 7: Webflow site**
+**Question 7: Webflow site** *(optional — many new sites are Astro-only; confirm against Notion)*
 - If a `Webflow URL` was found in Notion → confirm: *"Found Webflow URL in Notion: {url}. Use this?"*
-- Otherwise: "Do you have a Webflow site URL for this project?"
+- Otherwise: "Does this engagement include a Webflow site (Designer build and/or CMS)?"
   - Yes → paste URL
   - Not yet — I'll set one up later
-  - N/A (not using Webflow)
+  - No — Astro-only (no Webflow)
 
 ## Step 2 — Scaffold the project
 
@@ -81,6 +82,7 @@ Once you have the answers, create the project:
    ```
 
 5. **Apply customizations based on answers:**
+   - If **CloudCannon** selected: note in `README.md` / `CLAUDE.md` that CloudCannon will be wired; add placeholder config if the template includes it
    - If **Webflow CMS** selected: add `src/lib/webflow.ts` with a placeholder API client
    - If **Blog** selected: create `src/content/config.ts` with a blog collection schema
    - If **Contact form** selected: create `src/components/sections/ContactForm.astro` placeholder
@@ -98,7 +100,8 @@ Once you have the answers, create the project:
    - **Notion:** <notion-url or "TBD">
    - **GitHub:** https://github.com/williamteig/<project-name>
    - **Figma:** <figma-url or "TBD — create manually">
-   - **Webflow:** <webflow-url or "TBD" or "N/A">
+   - **Webflow:** <webflow-url or "N/A — Astro-only">
+   - **CMS:** <CloudCannon / Webflow headless / content collections / etc.>
    ```
 
 8. **Create a Notion task** — Add an initial task to the Dev Pipeline:
@@ -127,7 +130,7 @@ Once you have the answers, create the project:
    ```
    Manual steps remaining:
    - [ ] Create Figma file and add URL to Notion (Figma URL field)
-   - [ ] Set up Webflow site and add URL to Notion (Webflow URL field)
+   - [ ] If using Webflow: set up site and add URL to Notion (Webflow URL field)
    - [ ] Update the Project Links section in this project's CLAUDE.md
 
    Once added to Notion, run /orbytes-context-sync to pull the links into your session.

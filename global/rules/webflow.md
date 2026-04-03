@@ -7,7 +7,7 @@ alwaysApply: false
 
 ## Role in the Stack
 
-Webflow is the **primary site builder** for many orbytes website projects: layout, typography, component styling, CMS structure. **Figma** is the upstream handoff; **Astro** (or other stacks) may consume Webflow as CMS or coexist with a native Webflow site—clarify per project in Notion.
+Webflow is **optional** and **project-specific**: some website engagements use a **native Webflow Designer build** or **Webflow CMS** feeding a static site; many new sites are **Astro + Tailwind** with **CloudCannon** or other CMS—see **`dev-workflow.md`**. **Figma** is upstream for design handoff. **Never assume** Webflow until Notion or the task says so.
 
 The Webflow URL for each client is stored in their Notion project page (`Webflow URL` field).
 
@@ -30,8 +30,8 @@ Do not assume which mode applies—read the client task and Notion.
 
 ## Gotchas
 
-**Gotcha — Webflow is optional for app projects.**
-App projects (Custom Build tier) do not use Webflow. Only website projects (Landing Page, Full Website) use Webflow as the build tool.
+**Gotcha — Webflow is optional for websites too.**
+Confirm in Notion whether this engagement includes a Webflow site (Designer build and/or headless CMS). **Custom app** projects do not use Webflow.
 
 **Gotcha — Webflow CMS headless vs. native.**
 When a website project selects "Webflow CMS" as an integration, it means using Webflow as a headless CMS (content pulled via API into Astro). This is different from a native Webflow site build. Clarify which mode is in use before making CMS changes.

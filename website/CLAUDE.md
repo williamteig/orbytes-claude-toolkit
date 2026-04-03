@@ -1,13 +1,23 @@
 # orbytes — Website Project Rules
 
-This is an orbytes website client project. These rules extend the global orbytes rules.
+This is an orbytes **website** client project. These rules extend the global orbytes rules. **Global defaults** for “websites vs apps” and Webflow opt-in are in the toolkit `global/rules/dev-workflow.md` (symlinked in dev environments).
 
-## Stack
+## Stack (this repo)
 
-- **Framework**: Astro
-- **Styling**: Tailwind CSS
-- **Deployment**: Typically Vercel or Cloudflare Pages
-- **CMS**: Webflow CMS (content managed in Webflow, or headless via API)
+Confirm any CMS or Webflow usage in **Notion**; this file is the **source of truth for this codebase**.
+
+| Layer | Default |
+|-------|---------|
+| **Framework** | Astro |
+| **Styling** | Tailwind CSS |
+| **Deploy** | Cloudflare Pages or Vercel (as configured for this project) |
+| **CMS** | If content editors need a UI: often **CloudCannon** (Git-based). Alternatives: **Webflow CMS** headless → Astro at build time, Astro content collections / Markdown only, or other—document below. |
+| **Webflow Designer build** | **Only if this engagement uses one.** If the site is Astro-only, there is no Webflow Designer build—ignore Webflow MCP for layout work. |
+
+### Record for this project (fill in)
+
+- **CMS:** (e.g. CloudCannon / Webflow headless / none / other)
+- **Webflow:** (none | headless CMS only | native Designer build — link in Notion)
 
 ## Astro Conventions
 
@@ -24,6 +34,7 @@ This is an orbytes website client project. These rules extend the global orbytes
 - Define brand colours, fonts, and spacing in `tailwind.config.mjs` using design tokens
 - Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`) for mobile-first breakpoints
 - Use `prose` class from `@tailwindcss/typography` for CMS/long-form content
+
 ## Project Structure
 
 ```
@@ -52,15 +63,25 @@ src/
 ## SEO Defaults
 
 - Every page must have a unique `<title>` and `<meta name="description">`
-- Use semantic HTML (`<main>`, `<article>`, `<section>`, `<nav>`)- Include Open Graph and Twitter Card meta tags
+- Use semantic HTML (`<main>`, `<article>`, `<section>`, `<nav>`)
+- Include Open Graph and Twitter Card meta tags
 - Generate a sitemap (use `@astrojs/sitemap`)
 - Add structured data (JSON-LD) where appropriate
 
-## Webflow Integration
+## CloudCannon (when this project uses it)
 
-When the website also has a Webflow component (e.g., CMS content managed in Webflow):
+- Content and config live in **Git**; editors use CloudCannon for previews and structured fields—see global `cloudcannon.md` for conventions.
+- Branch strategy (preview vs production) should match the repo’s `README` / Notion.
+
+## Webflow (only when engaged)
+
+**Native Webflow Designer build** — site pages and styles live in Webflow; publishing is Webflow-hosted.
+
+**Webflow CMS → Astro (headless)** — editors use Webflow for collections; Astro pulls at **build time** via API:
 
 - Use the Webflow CMS API to pull content at build time
 - Cache API responses during builds
 - Map Webflow collection fields to Astro content types
-- Keep Webflow as the content editing interface for the client
+- Keep Webflow as the content editing interface when that is the agreed model
+
+If this project is **Astro-only** with no Webflow, delete or ignore this section.

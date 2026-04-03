@@ -37,5 +37,6 @@ When content is edited in **Webflow** and consumed at build time:
 
 ## Related rules
 
+- **Website vs app path:** `dev-workflow.md`
 - **Tailwind:** `tailwind.md`
 - **Webflow / CMS mode:** `webflow.md`

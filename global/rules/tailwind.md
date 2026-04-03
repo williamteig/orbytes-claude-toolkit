@@ -34,5 +34,6 @@ Designers annotate **Tailwind-aligned** breakpoints unless a task specifies othe
 
 ## Related rules
 
+- **Website vs app path:** `dev-workflow.md`
 - **Astro:** `astro.md`
 - **Figma structure:** `figma-file-structure.md`
