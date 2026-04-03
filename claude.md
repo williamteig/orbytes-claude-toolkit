@@ -1,33 +1,40 @@
 # orbytes-claude-toolkit — Project Instructions
 
-You are helping Will build and maintain the **orbytes-claude-toolkit**, a centralized Claude Code configuration repo that standardizes how Claude works across all orbytes.io client projects.
+You are helping Will build and maintain the **orbytes-claude-toolkit**, a centralized configuration repo that standardizes how AI coding assistants work across all orbytes.io client projects — **Claude Code** (primary) and **Cursor** (parallel install target).
 
 ## What this project is
 
-A GitHub repo (`williamteig/orbytes-claude-toolkit`) cloned at `/Users/williamteig/Documents/AppDev/orbytes-claude-toolkit`. It contains three layers of Claude Code configuration — global, website, and app — plus slash commands that scaffold new projects and manage the dev pipeline. Everything is symlinked into `~/.claude/` so updates to this repo propagate instantly to all projects.
+A GitHub repo (`williamteig/orbytes-claude-toolkit`) cloned at `/Users/williamteig/Documents/AppDev/orbytes-claude-toolkit`. It contains three layers of project configuration — global, website, and app — plus slash commands that scaffold new projects and manage the dev pipeline.
+
+- **`./install.sh`** (default `--target claude`) symlinks into **`~/.claude/`** so updates to this repo propagate instantly for Claude Code.
+- **Cursor is not configured by that default.** Use `./install.sh --target cursor` or `./install.sh --target all` to symlink the same assets into **`~/.cursor/`** (commands, rules as `.mdc`, skills).
+- The committed **`.cursor/`** directory mirrors `global/` via symlinks so **Cursor Cloud Agents** and repo-local sessions load rules and commands from the repository, not only from `~/.claude/`.
 
 ## Architecture
 
 ```
 orbytes-claude-toolkit/
-├── global/                    # Applies to ALL orbytes projects via ~/.claude/ symlinks
+├── AGENTS.md                  # Index of when to spawn each agent (Cursor + docs)
+├── global/                    # Source of truth; symlinked to ~/.claude/ and ~/.cursor/ by install.sh
 │   ├── CLAUDE.md             # Orbytes identity, tools, pointer to rules + skills
 │   ├── agents/               # Autonomous sub-agents spawned by commands/skills
-│   ├── commands/             # Slash commands (symlinked into ~/.claude/commands/)
-│   ├── rules/                # Topic-based rules (symlinked into ~/.claude/rules/)
-│   └── skills/               # Invocable skill modules (symlinked into ~/.claude/skills/)
+│   ├── commands/             # Slash commands
+│   ├── rules/                # Topic-based rules (.md; Cursor uses .mdc symlinks)
+│   └── skills/               # Invocable skill modules
+├── .cursor/                   # Committed symlinks → global/ (rules, commands, skills); mcp.json.example
 ├── website/                   # Copied into website projects during scaffolding
 │   ├── CLAUDE.md             # Astro + Tailwind conventions, SEO, performance targets
 │   └── templates/            # Starter files (package.json, astro.config, layouts, etc.)
 ├── app/                       # Copied into app projects during scaffolding
 │   └── CLAUDE.md             # Architecture principles, security defaults, flexible stack
-├── install.sh                 # Symlinks everything into ~/.claude/
-└── uninstall.sh               # Removes symlinks, restores backups
+├── install.sh                 # --target claude | cursor | all
+└── uninstall.sh               # Same targets; removes symlinks, restores backups
 ```
 
 ## How it works
 
-- **Global layer** lives in `~/.claude/` via symlinks. It applies to every Claude Code session automatically. Updating a file here updates it everywhere.
+- **Global layer (Claude Code)** lives in `~/.claude/` via symlinks when you install with `--target claude` or `all`. It applies to every Claude Code session automatically. Updating files under `global/` in the repo updates it everywhere once symlinked.
+- **Global layer (Cursor)** — After `./install.sh --target cursor` or `all`, the same sources appear under `~/.cursor/commands`, `~/.cursor/rules` (`.mdc` names), and `~/.cursor/skills`. The committed **`.cursor/`** tree in this repo provides in-repo parity for Cloud Agents.
 - **Type-specific layers** (website/app) are copied into each project during scaffolding via the `/new-orbytes-website` or `/new-orbytes-app` commands. These become project-local and can be customized per client.
 - **Commands** are prompt templates injected when a user types a slash command. They receive `$ARGUMENTS` and run inline in the conversation.
 - **Skills** are invocable modules with frontmatter metadata (`description`, `user-invocable`). Claude can trigger them automatically based on context, or the user can invoke them directly.
@@ -74,14 +81,14 @@ This toolkit is a living project. Areas to expand:
 - **Website templates** — more complete Astro starter (components, styles, content collections)
 - **App templates** — framework-specific starters for Next.js, SvelteKit, etc.
 - **MCP configuration** — standard `mcp-servers.json` for Notion, Figma, Webflow connections
-- **Hooks** — auto-context loading on session start, pattern extraction
+- **Hooks** — auto-context loading on session start, pattern extraction (optional: see README for a pointer to community hook adapters)
 - **More rules** — framework-specific gotchas for Astro, Next.js, Supabase, etc. in `website/rules/` and `app/rules/`
 - **Testing** — verify commands work end-to-end in fresh Claude Code sessions
 
 ## How to work on this project
 
 - Edit files directly in the repo at `/Users/williamteig/Documents/AppDev/orbytes-claude-toolkit`
-- Changes to `global/` (CLAUDE.md, commands/, skills/, rules/) take effect immediately everywhere (they're symlinked)
+- Changes to `global/` (CLAUDE.md, commands/, skills/, rules/) take effect immediately everywhere they are symlinked (`~/.claude/` and, if installed, `~/.cursor/`)
 - Changes to `website/` and `app/` only affect newly scaffolded projects
 - Commit and push to keep the GitHub remote in sync
 - The install script is idempotent — safe to re-run after adding new commands or skills
@@ -89,7 +96,10 @@ This toolkit is a living project. Areas to expand:
 ## Gotchas
 
 **Gotcha — adding a new category requires updating both scripts.**
-`install.sh` and `uninstall.sh` only handle the categories they know about (commands, rules, skills). If you add a new top-level category (e.g. `global/hooks/`), you must add the corresponding symlink loop to both scripts, otherwise the new files will never be wired up.
+`install.sh` and `uninstall.sh` only handle the categories they know about (commands, rules, skills, agents for Claude; commands, rules, skills for Cursor). If you add a new top-level category (e.g. `global/hooks/`), you must add the corresponding symlink loop to both scripts, otherwise the new files will never be wired up.
+
+**Gotcha — Cursor parity uses committed symlinks under `.cursor/`.**
+When you add a new global rule, command, or skill, add the matching symlink under `.cursor/rules/`, `.cursor/commands/`, or `.cursor/skills/` so the repo stays aligned with `global/` for Cloud Agents and clone-local Cursor workflows. The install scripts use globs for `~/.claude/` and `~/.cursor/`; the committed `.cursor/` tree is maintained separately.
 
 **Gotcha — empty directories are invisible to git.**
 Git does not track empty folders. If you create a new directory (e.g. `website/rules/`) without putting a file in it, it won't be committed and will silently disappear after a fresh clone. Add a real file before committing.

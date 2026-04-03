@@ -19,7 +19,7 @@ You are working on an Orbytes client project. Orbytes is a digital product studi
 
 ## Rules
 
-Detailed rules, gotchas, and conventions are organized by topic in `~/.claude/rules/`:
+Detailed rules, gotchas, and conventions are organized by topic in `~/.claude/rules/` (Claude Code) and, after running the Cursor install path, mirrored under `~/.cursor/rules/` as `.mdc` files pointing at the same sources:
 
 - `coding.md` — Naming, commit style, code quality (always active)
 - `git.md` — GitHub conventions, branch/PR patterns (always active)
@@ -27,3 +27,10 @@ Detailed rules, gotchas, and conventions are organized by topic in `~/.claude/ru
 - `figma.md` — Figma URL handling, branding rules, gotchas
 - `notion.md` — Source of truth rules, database IDs, update patterns
 - `webflow.md` — Webflow site management, CMS modes, gotchas
+- `pipeline.md` — Dev pipeline stages, agent categories, discipline routing
+
+## Cursor
+
+If you use **Cursor** (not only Claude Code): default `./install.sh` configures **`~/.claude/`** only. Run `./install.sh --target cursor` or `./install.sh --target all` to symlink the same commands, rules (as `.mdc`), and skills into **`~/.cursor/`**.
+
+The **orbytes-claude-toolkit** repo also commits a **`.cursor/`** tree (symlinks into `global/`) so Cloud Agents and clone-local workflows see rules and commands **in-repo**, not only under your home directory. **`AGENTS.md`** at the repo root summarizes when to spawn each agent under `global/agents/`.

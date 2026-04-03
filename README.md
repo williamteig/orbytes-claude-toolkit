@@ -1,25 +1,57 @@
 # orbytes-claude-toolkit
 
-The standard Claude Code toolkit for all orbytes.io projects. Install once, update centrally, available everywhere.
+The standard Claude Code toolkit for all orbytes.io projects. Install once, update centrally, available everywhere. **Cursor** is supported as a parallel install target; the repo also commits a **`.cursor/`** tree for in-repo and Cloud Agent use.
 
 ## Install
 
+### Claude Code (default)
+
 ```bash
-cd ~/Documents/AppDev/orbytes-claude-toolkit
+cd ~/path/to/orbytes-claude-toolkit
 chmod +x install.sh
 ./install.sh
 ```
 
-Everything is **symlinked**, not copied. The toolkit stays in one place on your machine.
+Equivalent to `./install.sh --target claude`. Symlinks into **`~/.claude/`** only.
+
+### Cursor
+
+```bash
+./install.sh --target cursor
+```
+
+Symlinks commands, rules (as `.mdc`), and skills into **`~/.cursor/`**. Use this if you use Cursor and want user-wide parity with the toolkit sources.
+
+### Both harnesses
+
+```bash
+./install.sh --target all
+```
+
+Configures **`~/.claude/`** and **`~/.cursor/`**.
+
+Everything installed by these scripts is **symlinked**, not copied. The toolkit stays in one place on your machine.
+
+**Note:** The repository already contains **`.cursor/rules`**, **`.cursor/commands`**, **`.cursor/skills`** (symlinks into `global/`) plus **`AGENTS.md`** so Cursor Cloud Agents and clone-local work pick up rules and commands **from the repo** without relying only on home-directory symlinks. Copy **`.cursor/mcp.json.example`** to **`.cursor/mcp.json`** when you add MCP servers (see [Cursor MCP docs](https://cursor.com/docs)).
 
 ## Update
 
 ```bash
-cd ~/Documents/AppDev/orbytes-claude-toolkit
+cd ~/path/to/orbytes-claude-toolkit
 git pull
 ```
 
-That's it. All commands, rules, and skills update across every project instantly because they're symlinks back to this repo.
+That's it. All symlinked commands, rules, and skills update across projects because they point back to this repo.
+
+## Uninstall
+
+```bash
+./uninstall.sh              # default: claude only
+./uninstall.sh --target cursor
+./uninstall.sh --target all
+```
+
+Removes toolkit symlinks for the chosen target(s) and restores any backed-up files.
 
 ## What's included
 
@@ -52,55 +84,61 @@ That's it. All commands, rules, and skills update across every project instantly
 
 ## How it works
 
+**Claude Code** (`./install.sh` or `--target claude`):
+
 ```
 ~/.claude/
 ├── CLAUDE.md                      → symlink → toolkit/global/CLAUDE.md
-├── commands/
-│   ├── task.md                    → symlink → toolkit/commands/task.md
-│   ├── new-orbytes-website.md     → symlink → toolkit/commands/new-orbytes-website.md
-│   └── new-orbytes-app.md         → symlink → toolkit/commands/new-orbytes-app.md
-└── skills/
-    ├── orbytes-context-sync/      → symlink → toolkit/global/skills/orbytes-context-sync/
-    └── orbytes-workflow-sync/     → symlink → toolkit/global/skills/orbytes-workflow-sync/
+├── commands/                      → symlinks → toolkit/global/commands/*.md
+├── rules/                         → symlinks → toolkit/global/rules/*.md
+├── skills/                        → symlinks → toolkit/global/skills/*/
+└── agents/                        → symlinks → toolkit/global/agents/*.md
 ```
-The **global layer** (CLAUDE.md, skills, commands) lives in `~/.claude/` via symlinks and applies to every Claude Code session.
 
-When you scaffold a new project with `/new-orbytes-website` or `/new-orbytes-app`, the **type-specific layer** (website or app rules + templates) is copied into that project since it's project-specific and may be customised.
+**Cursor** (`--target cursor` or `all`):
+
+```
+~/.cursor/
+├── commands/                      → symlinks → toolkit/global/commands/*.md
+├── rules/                         → symlinks → toolkit/global/rules/*.md (installed as *.mdc)
+└── skills/                        → symlinks → toolkit/global/skills/*/
+```
+
+The **global layer** applies to every session once symlinked. When you scaffold with `/new-orbytes-website` or `/new-orbytes-app`, the **website** or **app** layer is **copied** into that project.
 
 ## Per-project overrides
 
-After scaffolding, each project has its own `CLAUDE.md` in the project root. This contains the type-specific rules (website or app) and can be freely edited per project. It sits alongside the global `~/.claude/CLAUDE.md` — Claude reads both, with project-level rules taking priority.
-
-To override a global rule for one project, just add the override to the project's `CLAUDE.md`.
-
-## Uninstall
-
-```bash
-cd ~/Documents/AppDev/orbytes-claude-toolkit
-./uninstall.sh
-```
-
-Removes all symlinks and restores any backed-up files.
+After scaffolding, each project has its own `CLAUDE.md` in the project root. It sits alongside global instructions — project-level rules take priority where they overlap.
 
 ## Structure
 
 ```
 orbytes-claude-toolkit/
-├── install.sh                 # One-time setup
-├── uninstall.sh               # Clean removal
+├── AGENTS.md                  # When to spawn each agent (see global/agents/)
+├── install.sh
+├── uninstall.sh
 ├── README.md
-├── global/                    # Shared across ALL projects
-│   ├── CLAUDE.md             # Global rules (symlinked to ~/.claude/)
+├── global/                    # Shared across ALL projects (source of truth)
+│   ├── CLAUDE.md
+│   ├── agents/
+│   ├── commands/              # /task, /new-orbytes-website, /new-orbytes-app
+│   ├── rules/
 │   └── skills/
 │       ├── orbytes-context-sync/
-│       └── orbytes-workflow-sync/
-├── website/                   # Website project defaults
-│   ├── CLAUDE.md             # Copied into new website projects
-│   └── templates/            # Starter files for Astro + Tailwind
-├── app/                       # App project defaults
-│   └── CLAUDE.md             # Copied into new app projects
-└── commands/                  # Slash commands (symlinked to ~/.claude/commands/)
-    ├── task.md               # /task
-    ├── new-orbytes-website.md # /new-orbytes-website
-    └── new-orbytes-app.md     # /new-orbytes-app
+│       ├── orbytes-workflow-sync/
+│       └── task-done/
+├── .cursor/                   # Symlinks into global/ for repo-pinned Cursor + Cloud Agents
+│   ├── commands/
+│   ├── rules/                 # *.mdc → ../global/rules/*.md
+│   ├── skills/
+│   └── mcp.json.example
+├── website/
+│   ├── CLAUDE.md
+│   └── templates/
+└── app/
+    └── CLAUDE.md
 ```
+
+## Future / optional
+
+- **Shared hooks across Claude Code and Cursor** — The [everything-claude-code](https://github.com/affaan-m/everything-claude-code) project documents a Cursor hook adapter and multi-harness install patterns; useful if you want one hook script wired to both environments without duplicating logic.
