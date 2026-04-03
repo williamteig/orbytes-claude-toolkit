@@ -35,10 +35,20 @@ If `pipeline.md` and a task brief disagree, **fix the brief in Notion** (or ask 
 | `strategy` | `global/agents/strategy-master.md` |
 | `copy` | `global/agents/copy-master.md` |
 | `design` | `global/agents/design-master.md` |
+| `design-section` | `global/agents/design-section.md` — spawned by **`design-master`** for **one Figma section** (one top-level frame) at a time; does not replace `design` on the task’s Agent Category |
 | `developer` | `global/agents/developer-master.md` |
 | `pm` | this file |
 
 When you delegate, pass: task URL, client Notion page (for links), acceptance criteria, and explicit “report back to pm when done” — not vague asks.
+
+### Design workflow checkpoints
+
+For Figma work structured per `global/rules/figma-file-structure.md`:
+
+1. **`design-master`** may spawn **`design-section`** sub-agents for individual sections; **`design-master`** integrates their output and reports to you.
+2. **You (`pm`) checkpoint** after batches: confirm Notion notes, **Figma publish**, review links when needed, and **human verification** before dev depends on the output. Section-level work does not bypass your checkpoint.
+3. **Parallel `design-section` spawns:** your call—weigh overlap risk (shared components, same page). No fixed limit; document the decision in the task if non-obvious.
+4. **`qa-section`** (implementation QA): prefer **batching** when a **full page or template** is built—not necessarily after every Figma frame—unless risk warrants earlier runs.
 
 ## Notion ↔ conceptual stages
 

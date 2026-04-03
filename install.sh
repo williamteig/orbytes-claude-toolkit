@@ -137,6 +137,29 @@ install_claude() {
     ln -s "$agent_file" "$target"
   done
 
+  echo ""
+  echo "  Installing global hooks..."
+  local CLAUDE_HOOKS_DIR="$CLAUDE_DIR/hooks"
+  mkdir -p "$CLAUDE_HOOKS_DIR"
+  (
+    shopt -s nullglob
+    for hook_file in "$TOOLKIT_DIR/global/hooks"/*.sh "$TOOLKIT_DIR/global/hooks"/*.py; do
+      [ -e "$hook_file" ] || continue
+      hook_name="$(basename "$hook_file")"
+      target="$CLAUDE_HOOKS_DIR/$hook_name"
+      if [ -L "$target" ]; then
+        rm "$target"
+        echo "    ↻ $hook_name"
+      elif [ -f "$target" ]; then
+        mv "$target" "${target}.backup"
+        echo "    ⚠ Backed up existing: $hook_name"
+      else
+        echo "    + $hook_name"
+      fi
+      ln -s "$hook_file" "$target"
+    done
+  )
+
   local ENV_FILE="$CLAUDE_DIR/.env"
   if [ -f "$ENV_FILE" ]; then
     grep -v "ORBYTES_TOOLKIT_PATH" "$ENV_FILE" > "${ENV_FILE}.tmp" || true

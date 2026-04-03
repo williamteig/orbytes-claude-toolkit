@@ -5,6 +5,8 @@ alwaysApply: false
 
 # Figma Rules
 
+For **file page layout**, **brand vs wireframe vs hi-fi**, **variables-before-components**, **section handoff**, and **design-stage deploy**, see **`figma-file-structure.md`**.
+
 ## URL Handling
 
 **Gotcha — strip query params from Figma URLs.**

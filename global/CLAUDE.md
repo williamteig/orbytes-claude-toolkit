@@ -25,8 +25,13 @@ Detailed rules, gotchas, and conventions are organized by topic in `~/.claude/ru
 - `git.md` — GitHub conventions, branch/PR patterns (always active)
 - `workflow.md` — Stage order, approval gates, service tiers
 - `figma.md` — Figma URL handling, branding rules, gotchas
+- `figma-file-structure.md` — Figma page order, section handoff, design-stage deploy
 - `notion.md` — Source of truth rules, database IDs, update patterns
 - `webflow.md` — Webflow site management, CMS modes, gotchas
+- `astro.md` — Astro defaults for website projects
+- `tailwind.md` — Tailwind tokens and breakpoints vs Figma
+- `cloudflare.md` — Pages, Workers, secrets, previews
+- `cloudcannon.md` — Git-backed CMS editing and branch workflow
 - `pipeline.md` — Dev pipeline stages, agent categories, discipline routing
 
 ## Cursor

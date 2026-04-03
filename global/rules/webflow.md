@@ -7,9 +7,19 @@ alwaysApply: false
 
 ## Role in the Stack
 
-Webflow is the primary design and build tool for orbytes websites. Unlike Figma (which is intentionally lightweight), Webflow is where the full design happens — layout, typography, component styling, CMS structure.
+Webflow is the **primary site builder** for many orbytes website projects: layout, typography, component styling, CMS structure. **Figma** is the upstream handoff; **Astro** (or other stacks) may consume Webflow as CMS or coexist with a native Webflow site—clarify per project in Notion.
 
 The Webflow URL for each client is stored in their Notion project page (`Webflow URL` field).
+
+## Modes (clarify before work)
+
+| Mode | Meaning |
+|------|---------|
+| **Native Webflow Designer** | Pages and styles live in Webflow; publishing is Webflow-hosted. |
+| **Webflow CMS → headless** | Content is edited in Webflow; the **marketing site** is built in Astro (or similar) and pulls content at **build time** via API. |
+| **Webflow Code Components** | React (or similar) components deployed to a workspace library—see Webflow MCP skills for code-component workflows. |
+
+Do not assume which mode applies—read the client task and Notion.
 
 ## Working with Webflow
 

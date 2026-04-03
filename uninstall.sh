@@ -110,6 +110,21 @@ uninstall_claude() {
     fi
   done
 
+  local CLAUDE_HOOKS_DIR="$CLAUDE_DIR/hooks"
+  (
+    shopt -s nullglob
+    for hook_file in "$TOOLKIT_DIR/global/hooks"/*.sh "$TOOLKIT_DIR/global/hooks"/*.py; do
+      [ -e "$hook_file" ] || continue
+      hook_name="$(basename "$hook_file")"
+      target="$CLAUDE_HOOKS_DIR/$hook_name"
+      if [ -L "$target" ]; then
+        rm "$target"
+        echo "  - Removed hook: $hook_name"
+        [ -f "${target}.backup" ] && mv "${target}.backup" "$target" && echo "    ↻ Restored backup"
+      fi
+    done
+  )
+
   local ENV_FILE="$CLAUDE_DIR/.env"
   if [ -f "$ENV_FILE" ]; then
     grep -v "ORBYTES_TOOLKIT_PATH" "$ENV_FILE" > "${ENV_FILE}.tmp" || true

@@ -20,6 +20,7 @@ orbytes-claude-toolkit/
 │   ├── agents/               # Autonomous sub-agents spawned by commands/skills
 │   ├── commands/             # Slash commands
 │   ├── rules/                # Topic-based rules (.md; Cursor uses .mdc symlinks)
+│   ├── hooks/                # Claude Code hook scripts (symlinked to ~/.claude/hooks/)
 │   └── skills/               # Invocable skill modules
 ├── .cursor/                   # Committed symlinks → global/ (rules, commands, skills); mcp.json.example
 ├── website/                   # Copied into website projects during scaffolding
@@ -81,7 +82,7 @@ This toolkit is a living project. Areas to expand:
 - **Website templates** — more complete Astro starter (components, styles, content collections)
 - **App templates** — framework-specific starters for Next.js, SvelteKit, etc.
 - **MCP configuration** — standard `mcp-servers.json` for Notion, Figma, Webflow connections
-- **Hooks** — auto-context loading on session start, pattern extraction (optional: see README for a pointer to community hook adapters)
+- **More hooks** — session-start context injection, richer tool matchers (optional; see `global/hooks/` and README for Cursor adapter pointer)
 - **More rules** — framework-specific gotchas for Astro, Next.js, Supabase, etc. in `website/rules/` and `app/rules/`
 - **Testing** — verify commands work end-to-end in fresh Claude Code sessions
 
@@ -96,7 +97,7 @@ This toolkit is a living project. Areas to expand:
 ## Gotchas
 
 **Gotcha — adding a new category requires updating both scripts.**
-`install.sh` and `uninstall.sh` only handle the categories they know about (commands, rules, skills, agents for Claude; commands, rules, skills for Cursor). If you add a new top-level category (e.g. `global/hooks/`), you must add the corresponding symlink loop to both scripts, otherwise the new files will never be wired up.
+`install.sh` and `uninstall.sh` only handle the categories they know about (commands, rules, skills, agents, **hooks** for Claude; commands, rules, skills for Cursor). If you add a new top-level category (e.g. `global/templates/`), you must add the corresponding symlink loop to both scripts, otherwise the new files will never be wired up.
 
 **Gotcha — Cursor parity uses committed symlinks under `.cursor/`.**
 When you add a new global rule, command, or skill, add the matching symlink under `.cursor/rules/`, `.cursor/commands/`, or `.cursor/skills/` so the repo stays aligned with `global/` for Cloud Agents and clone-local Cursor workflows. The install scripts use globs for `~/.claude/` and `~/.cursor/`; the committed `.cursor/` tree is maintained separately.

@@ -41,7 +41,11 @@ cd ~/path/to/orbytes-claude-toolkit
 git pull
 ```
 
-That's it. All symlinked commands, rules, and skills update across projects because they point back to this repo.
+That’s it. All symlinked commands, rules, skills, agents, and hooks update across projects because they point back to this repo.
+
+### Hooks (Claude Code)
+
+`./install.sh` symlinks **`global/hooks/*.sh`** and **`*.py`** into **`~/.claude/hooks/`** (e.g. git safety + end-of-turn checklist). You still need to **register** those scripts in **Claude Code settings**—see **`global/hooks/README.md`** and **`global/hooks/settings.json.example`**. For sharing hook logic with Cursor, see **Future / optional** below.
 
 ## Uninstall
 
@@ -92,7 +96,8 @@ Removes toolkit symlinks for the chosen target(s) and restores any backed-up fil
 ├── commands/                      → symlinks → toolkit/global/commands/*.md
 ├── rules/                         → symlinks → toolkit/global/rules/*.md
 ├── skills/                        → symlinks → toolkit/global/skills/*/
-└── agents/                        → symlinks → toolkit/global/agents/*.md
+├── agents/                        → symlinks → toolkit/global/agents/*.md
+└── hooks/                         → symlinks → toolkit/global/hooks/*.{sh,py}
 ```
 
 **Cursor** (`--target cursor` or `all`):
@@ -123,6 +128,7 @@ orbytes-claude-toolkit/
 │   ├── agents/
 │   ├── commands/              # /task, /new-orbytes-website, /new-orbytes-app
 │   ├── rules/
+│   ├── hooks/               # Hooks symlinked to ~/.claude/hooks/
 │   └── skills/
 │       ├── orbytes-context-sync/
 │       ├── orbytes-workflow-sync/
@@ -141,4 +147,4 @@ orbytes-claude-toolkit/
 
 ## Future / optional
 
-- **Shared hooks across Claude Code and Cursor** — The [everything-claude-code](https://github.com/affaan-m/everything-claude-code) project documents a Cursor hook adapter and multi-harness install patterns; useful if you want one hook script wired to both environments without duplicating logic.
+- **Cursor hook parity** — The [everything-claude-code](https://github.com/affaan-m/everything-claude-code) project documents a Cursor hook adapter if you want the same scripts wired to both environments beyond the Claude Code `~/.claude/hooks/` symlinks.

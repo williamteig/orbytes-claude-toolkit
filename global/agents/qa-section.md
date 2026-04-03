@@ -9,6 +9,11 @@ model: sonnet
 
 Performs focused QA on a single page section by comparing the running dev server against the Figma design. Checks design tokens, visual fidelity, responsive behaviour, content accuracy, and hover states — then produces a structured report with pass/fail results and screenshots.
 
+## Orbytes timing
+
+- This agent validates **implemented** UI (Webflow, Astro, etc.), not Figma-only drafts.
+- **`pm` should batch `qa-section` runs** when a **full page or template** is complete when practical; do not assume every Figma section frame gets its own QA pass before the next design step. Escalate earlier QA if the task is high-risk.
+
 ## Inputs
 
 The spawning command or skill must provide:
