@@ -20,12 +20,46 @@ Do NOT search the pipeline, interpret the text as a request, or take any other a
 
 If `$ARGUMENTS` is a number (e.g., `13`), this is a task ID. Do the following:
 
-1. **Fetch the task** — Query the Dev Pipeline data source for the task where `userDefined:ID` equals the number:
-   ```
-   SELECT * FROM "collection://277efdcf-8436-4503-84a6-20f3e9428ef7" WHERE "userDefined:ID" = <number>
+1. **Fetch the task** — Resolve the page where the Dev Pipeline **ID** unique property equals `DEV-{number}` (same numeric ID the user passed). Use one of the paths below; never rely on search ranking alone without verifying the ID property.
+
+   **Path A — Notion REST API (exact match, use when `NOTION_API_KEY` can be loaded)**  
+   If the integration can access the Dev Pipeline database, resolve the key then query:
+
+   1. Ensure `NOTION_API_KEY` is set: if it is empty, load `.env` (POSIX `set -a`, source file, `set +a`) from **the first path that exists**: `./.env` in the current working directory, else `$ORBYTES_TOOLKIT_PATH/.env` when `ORBYTES_TOOLKIT_PATH` is set (install.sh writes this to `~/.claude/.env`). Skip loading if the key is already in the environment.
+
+   2. Run (substitute `<number>` with the task id from `$ARGUMENTS`):
+
+   ```bash
+   curl -s -X POST "https://api.notion.com/v1/databases/599e132701274298b902d85a529ebde5/query" \
+     -H "Authorization: Bearer $NOTION_API_KEY" \
+     -H "Notion-Version: 2022-06-28" \
+     -H "Content-Type: application/json" \
+     -d "{\"filter\":{\"property\":\"ID\",\"unique_id\":{\"equals\":<number>}}}"
    ```
 
-2. **Read the task page** — Use `notion-fetch` on the task's URL to read the full page content, including any sub-content, checklists, or notes inside it.
+   3. Parse the JSON: if `results` is empty, stop — no task matches that ID. Otherwise use `results[0].id` as the page id.
+
+   4. Call `notion-fetch` with that id (or the canonical Notion URL for the page) to load properties and body.
+
+   If the request fails (e.g. missing key, 401/403), fall through to Path B.
+
+   **Path B — Notion MCP semantic search + verify (fallback)**  
+   When Path A is not available or fails:
+
+   1. Call `notion-search` with:
+      - `query`: `"DEV-{number}"`
+      - `data_source_url`: `"collection://277efdcf-8436-4503-84a6-20f3e9428ef7"`
+      - `page_size`: `3`
+      - `max_highlight_length`: `0`
+      - `filters`: `{}` (required empty object if the tool schema demands `filters`)
+
+   2. For each result, call `notion-fetch` on the page id or URL from the result.
+
+   3. Confirm the task row: `properties["userDefined:ID"]` must equal `"DEV-{number}"` (or the equivalent unique_id display on the fetched page). Use the **first** row that matches exactly.
+
+   4. If no result matches exactly, stop — do not pick a close match from semantic search alone.
+
+2. **Read the task page** — Use the `notion-fetch` result from step 1. Read the entire body, including sub-content, checklists, and notes. If a fetch was skipped or returned only row metadata, call `notion-fetch` on the task URL again for full markdown.
 
 3. **Check dependencies** — Read the task's `Blocked by` relation. For each linked task, fetch its page and check its `Status`.
    - If all blockers have Status "Done" → proceed normally
@@ -202,6 +236,7 @@ If `$ARGUMENTS` is text (not a number), this is a new task description. Do the f
 
 ## Important context
 
+- **Exact task lookup:** Path A uses `NOTION_API_KEY` from the environment or from `.env` at the project root / `$ORBYTES_TOOLKIT_PATH/.env`. The integration must be connected to the Dev Pipeline database in Notion. If the key is missing, Path B still works if you verify `userDefined:ID` after search.
 - The Dev Pipeline is shared across all orbytes projects. The `Client Belonging` relation determines which project a task belongs to.
 - Each client project in the Orbytes Clients database can have a filtered view of this pipeline showing only their tasks.
 - Task IDs are auto-incremented — you never set them manually.
