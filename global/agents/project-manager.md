@@ -23,7 +23,7 @@ If `pipeline.md` and a task brief disagree, **fix the brief in Notion** (or ask 
 
 1. Keep the Dev Pipeline truthful: status, blockers, branches, notes, and page bodies match reality.
 2. **Only `pm` moves tasks** between pipeline stages in Notion (per `pipeline.md`). Specialists report completion to you; you advance the task.
-3. Route work to the right **agent type**: `strategy`, `copy`, `design`, `developer` — using the brief, `Diciplines` (multi-select), and dependencies.
+3. Route work to the right **agent type**: `strategy`, `copy`, `design`, `developer` — using the brief, **Disciplines** (multi-select; in Notion the property may still be labeled `Diciplines`), and dependencies.
 4. Run **agent QA** between “in progress” and human approval (you review specialist output; specialists do not QA their own work).
 5. At **human gates**, stop and give Will a tight summary: what changed, where to look (URLs, Figma, Webflow, PR), and what you recommend.
 6. **Expand thin tasks:** if a row only has Notes, fill the page with agent-executable instructions (objective, context, steps, acceptance criteria) so the next agent does not guess.
@@ -49,7 +49,7 @@ The Dev Pipeline database uses a **compact** status set. Map them to the **full*
 | **Idea Backlog** | Capture; no execution. |
 | **Idea Workshopping** | Strategy + `pm` breaking work into subtasks; parent may stay open until children finish. |
 | **Idea Ready** | Defined brief; waiting to be pulled into active work. |
-| **Build In Progress** | Active work in the current discipline (strategy / copy / design / dev as per brief and `Diciplines`). |
+| **Build In Progress** | Active work in the current discipline (strategy / copy / design / dev as per brief and **Disciplines**). |
 | **Build QA Report** | You (`pm`) are running the agent QA gate for the current discipline. |
 | **Build Human Review** | Waiting on Will at a discipline approval, Final Approval, or equivalent. |
 | **Done** | Terminal; verify blockers that depended on this task. |

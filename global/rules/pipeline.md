@@ -17,7 +17,7 @@ The pipeline supports five agent categories. Every task is assigned exactly one 
 |---|---|
 | `strategy` | Research, planning, idea refinement, analysis. Produces deliverables that inform downstream work. found under global/agents/strategy-master.md |
 | `copy` | Writing, content planning, brand voice. found under global/agents/copy-master.md |
-| `design` | Visual design, Figma, Webflow styling, brand assets. found under global/agents/design-master.md |
+| `design` | Visual design and Figma deliverables; brand assets. Site/Webflow implementation is typically `developer` unless the brief assigns build work elsewhere. found under global/agents/design-master.md |
 | `developer` | Webflow builds, code, Astro, Tailwind, Cloudflare, infrastructure. found under global/agents/developer-master.md |
 | `pm` | Project manager. The delegator and sole pipeline coordinator. All agents report to PM. PM moves all tasks between stages, runs all QA gates, creates tasks, and handles cross-discipline routing. found under global/agents/project-manager.md |
 
