@@ -1,15 +1,16 @@
+import { runFleshOut } from "./flesh-out";
 
-type JobAction = 'run' | 'flesh_out';
-type JobStatus = 'pending' | 'claimed' | 'completed' | 'failed';
+type JobAction = "run" | "flesh_out";
+type JobStatus = "pending" | "claimed" | "completed" | "failed";
 
 function json(data: unknown, status = 200): Response {
 	return new Response(JSON.stringify(data), {
 		status,
 		headers: {
-			'content-type': 'application/json; charset=utf-8',
-			'access-control-allow-origin': '*',
-			'access-control-allow-methods': 'GET, POST, PATCH, OPTIONS',
-			'access-control-allow-headers': 'Authorization, Content-Type',
+			"content-type": "application/json; charset=utf-8",
+			"access-control-allow-origin": "*",
+			"access-control-allow-methods": "GET, POST, PATCH, OPTIONS",
+			"access-control-allow-headers": "Authorization, Content-Type",
 		},
 	});
 }
@@ -18,10 +19,10 @@ function corsPreflight(): Response {
 	return new Response(null, {
 		status: 204,
 		headers: {
-			'access-control-allow-origin': '*',
-			'access-control-allow-methods': 'GET, POST, PATCH, OPTIONS',
-			'access-control-allow-headers': 'Authorization, Content-Type',
-			'access-control-max-age': '86400',
+			"access-control-allow-origin": "*",
+			"access-control-allow-methods": "GET, POST, PATCH, OPTIONS",
+			"access-control-allow-headers": "Authorization, Content-Type",
+			"access-control-max-age": "86400",
 		},
 	});
 }
@@ -36,50 +37,62 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 function bearer(request: Request): string | null {
-	const h = request.headers.get('Authorization');
-	if (!h?.startsWith('Bearer ')) return null;
+	const h = request.headers.get("Authorization");
+	if (!h?.startsWith("Bearer ")) return null;
 	return h.slice(7);
 }
 
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
-		if (request.method === 'OPTIONS') {
+	async fetch(
+		request: Request,
+		env: Env,
+		ctx: ExecutionContext,
+	): Promise<Response> {
+		if (request.method === "OPTIONS") {
 			return corsPreflight();
 		}
 
 		const url = new URL(request.url);
 		const path = url.pathname;
 
-		if (path === '/health' || path === '/') {
-			return json({ ok: true, service: 'notion-task-bridge-api' });
+		if (path === "/health" || path === "/") {
+			return json({ ok: true, service: "notion-task-bridge-api" });
 		}
 
-		if (path === '/api/webhooks/notion' && request.method === 'POST') {
-			return handleNotionWebhook(request, env);
+		if (path === "/api/webhooks/notion" && request.method === "POST") {
+			return handleNotionWebhook(request, env, ctx);
 		}
 
-		if (path === '/api/jobs/pending' && request.method === 'GET') {
+		if (path === "/api/tasks/flesh-out" && request.method === "POST") {
+			return handleFleshOutManual(request, env, ctx);
+		}
+
+		if (path === "/api/jobs/pending" && request.method === "GET") {
 			return listPendingJobs(request, env);
 		}
 
-		if (path.startsWith('/api/jobs/') && request.method === 'PATCH') {
-			const id = path.slice('/api/jobs/'.length);
+		if (path.startsWith("/api/jobs/") && request.method === "PATCH") {
+			const id = path.slice("/api/jobs/".length);
 			return patchJob(request, env, id);
 		}
 
-		return json({ error: 'not_found' }, 404);
+		return json({ error: "not_found" }, 404);
 	},
 } satisfies ExportedHandler<Env>;
 
-async function handleNotionWebhook(request: Request, env: Env): Promise<Response> {
+async function handleNotionWebhook(
+	request: Request,
+	env: Env,
+	ctx: ExecutionContext,
+): Promise<Response> {
 	const secret = env.WEBHOOK_SECRET;
 	if (!secret) {
-		return json({ error: 'server_misconfigured', detail: 'WEBHOOK_SECRET' }, 500);
+		return json({ error: "server_misconfigured", detail: "WEBHOOK_SECRET" }, 500);
 	}
 
 	const token = bearer(request);
 	if (!token || !timingSafeEqual(token, secret)) {
-		return json({ error: 'unauthorized' }, 401);
+		return json({ error: "unauthorized" }, 401);
 	}
 
 	let body: {
@@ -91,42 +104,106 @@ async function handleNotionWebhook(request: Request, env: Env): Promise<Response
 	try {
 		body = (await request.json()) as typeof body;
 	} catch {
-		return json({ error: 'invalid_json' }, 400);
+		return json({ error: "invalid_json" }, 400);
 	}
 
 	const action = body.action;
-	if (action !== 'run' && action !== 'flesh_out') {
-		return json({ error: 'invalid_action', expected: ['run', 'flesh_out'] }, 400);
+	if (action !== "run" && action !== "flesh_out") {
+		return json({ error: "invalid_action", expected: ["run", "flesh_out"] }, 400);
+	}
+
+	const notionPageId =
+		typeof body.notionPageId === "string" ? body.notionPageId : null;
+
+	if (action === "flesh_out") {
+		if (!notionPageId) {
+			return json({ error: "notionPageId_required" }, 400);
+		}
+		const pageId = normalizeNotionPageId(notionPageId);
+		ctx.waitUntil(
+			runFleshOut(env, pageId).catch((err: unknown) => {
+				console.error("flesh_out_failed", err);
+			}),
+		);
+		return json({
+			ok: true,
+			accepted: true,
+			mode: "flesh_out_async",
+			notionPageId: pageId,
+		});
 	}
 
 	const id = crypto.randomUUID();
 	const now = new Date().toISOString();
 	const devId =
-		typeof body.devId === 'number' && Number.isFinite(body.devId)
+		typeof body.devId === "number" && Number.isFinite(body.devId)
 			? Math.floor(body.devId)
 			: null;
-	const notionPageId =
-		typeof body.notionPageId === 'string' ? body.notionPageId : null;
 	const payload = body.payload ? JSON.stringify(body.payload) : null;
 
 	await env.DB.prepare(
 		`INSERT INTO jobs (id, dev_id, notion_page_id, action, status, created_at, updated_at, payload)
-     VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)`,
+     VALUES (?, ?, ?, 'run', 'pending', ?, ?, ?)`,
 	)
-		.bind(id, devId, notionPageId, action, now, now, payload)
+		.bind(id, devId, notionPageId, now, now, payload)
 		.run();
 
-	return json({ ok: true, jobId: id, action, devId, notionPageId });
+	return json({ ok: true, jobId: id, action: "run", devId, notionPageId });
+}
+
+async function handleFleshOutManual(
+	request: Request,
+	env: Env,
+	ctx: ExecutionContext,
+): Promise<Response> {
+	const secret = env.WEBHOOK_SECRET;
+	if (!secret) {
+		return json({ error: "server_misconfigured", detail: "WEBHOOK_SECRET" }, 500);
+	}
+
+	const token = bearer(request);
+	if (!token || !timingSafeEqual(token, secret)) {
+		return json({ error: "unauthorized" }, 401);
+	}
+
+	let body: { notionPageId?: string };
+	try {
+		body = (await request.json()) as typeof body;
+	} catch {
+		return json({ error: "invalid_json" }, 400);
+	}
+
+	const raw = body.notionPageId;
+	if (typeof raw !== "string" || !raw.trim()) {
+		return json({ error: "notionPageId_required" }, 400);
+	}
+
+	const pageId = normalizeNotionPageId(raw);
+	ctx.waitUntil(
+		runFleshOut(env, pageId).catch((err: unknown) => {
+			console.error("flesh_out_failed", err);
+		}),
+	);
+	return json({ ok: true, accepted: true, mode: "flesh_out_async", notionPageId: pageId });
+}
+
+function normalizeNotionPageId(raw: string): string {
+	const s = raw.trim();
+	const hex = s.replace(/[^0-9a-f]/gi, "");
+	if (hex.length === 32) {
+		return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`.toLowerCase();
+	}
+	return s;
 }
 
 async function listPendingJobs(request: Request, env: Env): Promise<Response> {
 	const device = env.DEVICE_TOKEN;
 	if (!device) {
-		return json({ error: 'server_misconfigured', detail: 'DEVICE_TOKEN' }, 500);
+		return json({ error: "server_misconfigured", detail: "DEVICE_TOKEN" }, 500);
 	}
 	const token = bearer(request);
 	if (!token || !timingSafeEqual(token, device)) {
-		return json({ error: 'unauthorized' }, 401);
+		return json({ error: "unauthorized" }, 401);
 	}
 
 	const rs = await env.DB.prepare(
@@ -168,23 +245,23 @@ function safeJsonParse(s: string): unknown {
 async function patchJob(request: Request, env: Env, id: string): Promise<Response> {
 	const device = env.DEVICE_TOKEN;
 	if (!device) {
-		return json({ error: 'server_misconfigured', detail: 'DEVICE_TOKEN' }, 500);
+		return json({ error: "server_misconfigured", detail: "DEVICE_TOKEN" }, 500);
 	}
 	const token = bearer(request);
 	if (!token || !timingSafeEqual(token, device)) {
-		return json({ error: 'unauthorized' }, 401);
+		return json({ error: "unauthorized" }, 401);
 	}
 
 	let body: { status?: JobStatus };
 	try {
 		body = (await request.json()) as typeof body;
 	} catch {
-		return json({ error: 'invalid_json' }, 400);
+		return json({ error: "invalid_json" }, 400);
 	}
 
 	const next = body.status;
-	if (next !== 'completed' && next !== 'failed' && next !== 'claimed') {
-		return json({ error: 'invalid_status' }, 400);
+	if (next !== "completed" && next !== "failed" && next !== "claimed") {
+		return json({ error: "invalid_status" }, 400);
 	}
 
 	const now = new Date().toISOString();
@@ -195,7 +272,7 @@ async function patchJob(request: Request, env: Env, id: string): Promise<Respons
 		.run();
 
 	if (result.meta.changes === 0) {
-		return json({ error: 'not_found_or_invalid_transition' }, 404);
+		return json({ error: "not_found_or_invalid_transition" }, 404);
 	}
 
 	return json({ ok: true, id, status: next });

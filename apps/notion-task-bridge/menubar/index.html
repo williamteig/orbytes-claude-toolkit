@@ -9,8 +9,14 @@
 	<body>
 		<main>
 			<p id="status">Starting…</p>
-			<button type="button" id="refresh">Refresh</button>
+			<button type="button" id="refresh">Refresh jobs</button>
 			<pre id="jobs"></pre>
+			<hr />
+			<h2>Flesh out (PM)</h2>
+			<p class="hint">Paste a Dev Pipeline task page ID or full Notion URL.</p>
+			<input type="text" id="pageId" placeholder="Page ID or URL" size="48" />
+			<button type="button" id="fleshOut">Queue flesh-out</button>
+			<pre id="fleshOutResult"></pre>
 		</main>
 	</body>
 </html>

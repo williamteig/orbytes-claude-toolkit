@@ -9,7 +9,8 @@
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
 		"d1:apply": "wrangler d1 migrations apply notion-task-bridge --local",
-		"d1:apply:remote": "wrangler d1 migrations apply notion-task-bridge --remote"
+		"d1:apply:remote": "wrangler d1 migrations apply notion-task-bridge --remote",
+		"generate:toolkit": "node scripts/generate-toolkit-context.mjs"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.12.4",

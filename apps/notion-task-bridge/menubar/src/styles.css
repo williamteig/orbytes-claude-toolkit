@@ -15,3 +15,13 @@ pre {
 	max-height: 220px;
 	overflow: auto;
 }
+
+.hint {
+	color: #555;
+	font-size: 12px;
+}
+input {
+	width: 100%;
+	max-width: 420px;
+	margin-bottom: 8px;
+}
