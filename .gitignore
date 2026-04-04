@@ -1,1 +1,8 @@
 .env
+
+apps/notion-task-bridge/worker/.dev.vars
+apps/notion-task-bridge/menubar/.env
+apps/notion-task-bridge/worker/.wrangler/
+apps/notion-task-bridge/menubar/src-tauri/target/
+
+apps/notion-task-bridge/worker/vendor-toolkit/
