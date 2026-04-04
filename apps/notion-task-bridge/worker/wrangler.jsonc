@@ -9,7 +9,7 @@
 		{
 			"binding": "DB",
 			"database_name": "notion-task-bridge",
-			"database_id": "00000000-0000-0000-0000-000000000001",
+			"database_id": "4f259b24-f3b9-414c-866f-600c480a38a2",
 			"migrations_dir": "migrations"
 		}
 	]

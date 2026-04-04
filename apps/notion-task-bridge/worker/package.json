@@ -10,6 +10,7 @@
 		"cf-typegen": "wrangler types",
 		"d1:apply": "wrangler d1 migrations apply notion-task-bridge --local",
 		"d1:apply:remote": "wrangler d1 migrations apply notion-task-bridge --remote",
+		"secrets:push": "bash scripts/push-secrets-from-devvars.sh",
 		"generate:toolkit": "node scripts/generate-toolkit-context.mjs"
 	},
 	"devDependencies": {

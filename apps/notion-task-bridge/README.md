@@ -18,7 +18,7 @@ You must complete these steps before flesh-out and Notion writes work end-to-end
 1. **Anthropic API key** — Create at [Anthropic Console](https://console.anthropic.com/). Put the key in Worker `ANTHROPIC_API_KEY` (local: `worker/.dev.vars`; production: `npx wrangler secret put ANTHROPIC_API_KEY`).
 2. **Notion integration** — At [My integrations](https://www.notion.so/my-integrations), create an integration, copy its **Internal Integration Secret** into `NOTION_API_KEY` (same local/secret pattern as above).
 3. **Share pages with the integration** — Open your **Dev Pipeline** database and each task page as needed → **⋯** → **Add connections** → select your integration. Without this, Notion returns 403/404 for the Worker.
-4. **Cloudflare (production only)** — Run `npx wrangler login` once per machine. Create D1: `npx wrangler d1 create notion-task-bridge`, paste the returned `database_id` into `worker/wrangler.jsonc` (replace the placeholder UUID). Apply migrations: `npx wrangler d1 migrations apply notion-task-bridge --remote`. Set all secrets with `wrangler secret put`.
+4. **Cloudflare (production only)** — Run `npx wrangler login` once per machine. Create D1: `npx wrangler d1 create notion-task-bridge`, paste the returned `database_id` into `worker/wrangler.jsonc` (replace the placeholder UUID). Apply migrations: `npx wrangler d1 migrations apply notion-task-bridge --remote`. Set all four secrets with `npx wrangler secret put …` or copy from local `.dev.vars` via `npm run secrets:push` in `worker/`.
 5. **Stop and verify** — After deploying, trigger a test flesh-out on a **non-production** task page and confirm properties + body in Notion before using on client work.
 
 ## Worker (local dev)

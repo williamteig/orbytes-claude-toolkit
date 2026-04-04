@@ -1,7 +1,7 @@
 import "./styles.css";
 
 const apiBase =
-	import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:9876";
+	import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8787";
 const deviceToken = import.meta.env.VITE_DEVICE_TOKEN ?? "";
 const webhookSecret = import.meta.env.VITE_WEBHOOK_SECRET ?? "";
 
