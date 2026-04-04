@@ -7,6 +7,11 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"check": "npm run lint && npm run format:check && npm test -- --run",
 		"cf-typegen": "wrangler types",
 		"d1:apply": "wrangler d1 migrations apply notion-task-bridge --local",
 		"d1:apply:remote": "wrangler d1 migrations apply notion-task-bridge --remote",
@@ -16,7 +21,13 @@
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.14.1",
 		"@cloudflare/workers-types": "^4.20260404.1",
+		"@eslint/js": "^10.0.1",
+		"eslint": "^10.2.0",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^17.4.0",
+		"prettier": "^3.8.1",
 		"typescript": "^5.5.2",
+		"typescript-eslint": "^8.58.0",
 		"vitest": "^4.1.0",
 		"wrangler": "^4.80.0"
 	}

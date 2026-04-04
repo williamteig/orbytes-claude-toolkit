@@ -77,6 +77,18 @@ Runtime flesh-out uses `src/generated/toolkit-context.ts` from `npm run generate
 
 Do not commit `.dev.vars` or `menubar/.env`.
 
+## Lint and format
+
+From `worker/` or `menubar/`:
+
+- `npm run lint` — ESLint (TypeScript + `eslint-config-prettier`)
+- `npm run lint:fix` — ESLint with autofix
+- `npm run format` — Prettier write
+- `npm run format:check` — Prettier check (CI-friendly)
+- `npm run check` — `worker`: lint + format check + Vitest; `menubar`: lint + format check
+
+Generated Worker code (`worker/src/generated/`) and `worker-configuration.d.ts` are ignored by ESLint/Prettier.
+
 ## Limitations
 
 - Flesh-out runs on the Worker with a **CPU/time budget**; very large pages or slow Anthropic responses may fail — check `wrangler tail` / dashboard logs.
